@@ -1,0 +1,295 @@
+<html>
+    <head>
+       <title>Demo Day</title>
+       <script>
+        //Само решение идет в функции, чтобы не было повтрения одного кода
+        function Decision(array_V1, array_V2) {
+        
+        // Создает новый массив
+        let array__W = [array_V1.length];
+        //В новом массиве задаем кол-во строк и столбцов
+        rows = array_V1.length;                        
+        cols = array_V1[0].length;                
+          for (let j = 0; j < cols; j++) {                
+            array__W[j] = Array(rows);                   
+            }
+        let array__W_x1 = [array_V1.length * array_V1[0].length];
+
+
+        //Суммирование (?)Есть проблема если кол-во столбцав первого массива
+        //меньше кол-во строк(?):
+
+        //Перебираем 2 массив
+        for (let i = 0; i < array_V2.length; i++){
+          array__W[i] = []
+          let sum = 0;
+          for (let j = 0; j < array_V2[i].length; j++){
+            sum += array_V2[i][j];
+          }
+          for (let j = 0; j < array_V1[i].length; j++){
+          array__W[i][j] = array_V1[i][j] + sum;
+          }
+          sum = 0;
+          }
+
+
+
+        // Костыль :( Почему-то при суммировании добавляется ещё пара лишних элементов
+        array__W.length = array_V1.length 
+
+
+
+        //Вывод заданных данных для наглядности:
+        //Источник метода вывода данных: Елизавета К.
+        let matrix_01 = "<table>";//открываем (создаем) таблицу
+          for (let i = 0; i < array_V1.length; i++) {
+            matrix_01 += "<tr>";//открываем строку таблицы
+            for (let j = 0; j < array_V1[i].length; j++) {
+              matrix_01 += "<td align='center'>"; //открываем столбец в строке, 
+              //align для выравнивания по центру (не обязательно, но так лучше)
+              matrix_01 += array_V1[i][j];
+              matrix_01 += "</td>";//закрываем столбец в строке
+            }
+            matrix_01 += "</tr>";//закрываем строку таблицы
+          }
+          matrix_01 += "</table>"; //закрываем таблицу
+          document.write(`Была дана числовая матрица V1(${rows}, ${cols_N}):` + matrix_01 + '<br\/>');
+
+
+          //Вывод второй заданной матрицы:
+          let matrix_02 = "<table>";
+          for (let i = 0; i < array_V2.length; i++) {
+            matrix_02 += "<tr>";
+            for (let j = 0; j < array_V2[i].length; j++) {
+              matrix_02 += "<td align='center'>"; 
+              matrix_02 += array_V2[i][j];
+              matrix_02 += "</td>"; 
+            }
+            matrix_02 += "</tr>"; 
+          }
+          matrix_02 += "</table>";
+          document.write(`А также, числовая матрица V2(${rows}, ${cols_L}):` + matrix_02 + '<br\/>');
+
+          //Вывод результирующей матрицы W:
+          let matrix_03 = "<table>";
+          for (let i = 0; i < array__W.length; i++) {
+            matrix_03 += "<tr>";
+            for (let j = 0; j < array__W[i].length; j++) {
+              matrix_03 += "<td align='center'>";
+              matrix_03 += array__W[i][j];
+              matrix_03 += "</td>";
+            }
+            matrix_03 += "</tr>";
+          }
+          matrix_03 += "</table>";
+          document.write(`С помощью программы, получили третью результирующую матрицу W суммированием 
+        элементов каждой строки матрицы V1 с алгебраической 
+        суммой элементов соответствующей строки матрицы V2` + matrix_03 + '<br\/>');
+
+
+        //Создаю ещё один массив, чтобы все записать в один массив:
+        let total = 0;
+        for (let i = 0; i < array__W.length; i++){
+          for (let j = 0; j < array__W[i].length; j++){
+            array__W_x1[total] = array__W[i][j]
+            total++
+          }
+        }
+
+        //Сортировка бинарными вставками:
+        let middle = 0;
+        let X = 0;
+        let left_border = 0;
+        let right_border = 0;
+        for (let i = 1; i < array__W_x1.length; i++){
+             X = array__W_x1[i];
+             left_border = 0;
+             right_border = i-1;
+
+            while (left_border <= right_border){
+                middle = Math.floor((left_border + right_border) / 2);
+                if (X > array__W_x1[middle]) {
+                    right_border = middle - 1;
+                } else {
+                    left_border = middle + 1;
+                }
+            }
+            if (left_border > right_border) {
+                for (let J = i-1; J >= left_border; J--){
+                  array__W_x1[J+1] = array__W_x1[J];
+                }
+                array__W_x1[left_border] = X;
+            }
+        }
+
+        //Вывод матрицы W, где все ее элементы в порядке убывания:
+            document.write(`А также, сделали сортировку матрицы W в порядке убывания: <br \/> ${array__W_x1}`);
+      }
+        
+
+        //Ввод данных
+        let question = prompt(`Хотите ввести свои массивы? 
+Введите "1" если хотите ввести самостоятельно размерность и все элементы;
+Введите "2" если хотите ввести самостоятельно только размерность;
+Если нажмете 'Отмена' будут использованы заданные значения`, '');
+        //флаг для проверки ввода данных:
+        var q_break = true;
+
+        //Сценарий 1: Все значения вводит человек
+        if (question == 1){
+          var rows = +prompt(`Введите количество строк в массивах: `, '');
+          var cols_N = +prompt(`Введите количество столбцов в первом массиве: `, '');
+          var cols_L = +prompt(`Введите количество столбцов во втором массиве: `, '');
+          
+          //Проверка, что ввел человек
+          if (isNaN(rows) || rows < 0 || rows == '' ){
+            alert(`Ошибка в количестве строк! Вводить можно только положительные 
+числа больше нуля! Давайте начнём с начала!)`);
+            location.reload ();
+          } else if (isNaN(cols_N) || cols_N < 0 || cols_N == ''){
+            alert(`Ошибка в количестве столбцов первого массива! Вводить можно 
+только положительные числа! Давайте начнём с начала!)`);
+            location.reload ();
+          } else if (isNaN(cols_L) || cols_L < 0 || cols_L == ''){
+            alert(`Ошибка в количестве столбцов второго массива! Вводить можно 
+только положительные числа! Давайте начнём с начала!)`);
+            location.reload ();
+          } else {
+
+          //Создание массивов:
+          //Создание первого массива:
+          let array_V1 = [];
+          let array_V2 = [];
+          for (let i = 0; i < rows; i++){
+            array_V1[i] = [];
+            for (let j = 0; j < cols_N; j++){
+              array_V1[i][j] = +prompt(`Введите число первого массива стоящее в 
+${i+1} строке и ${j+1} столбце`, 'Ноль нельзя');
+              //Проверка при вводе первого массива
+              if (isNaN(array_V1[i][j])){
+                alert(`Ошибка! Вводить можно только числа! Давайте начнём с начала!)`);
+                q_break = false;
+                location.reload();
+                break;
+              } else if (array_V1[i][j] == ' '){
+                  alert(`Ошибка! Не ввели значение либо поставили ноль! Давайте начнём с начала!)`);
+                  q_break = false;
+                  location.reload();
+                  break;
+              }
+            } 
+            if (q_break == false){
+              break;
+            }
+          }
+        
+
+          //Создание второго массива
+            for (let i = 0; i < rows; i++){
+              //Дополнительная проверка на флаг, чтобы программа не пошла дальше:
+              if (q_break == false){
+              location.reload();
+              break;
+              }
+              array_V2[i] = []
+              for (let j = 0; j < cols_L; j++){
+                array_V2[i][j] = +prompt(`Введите число второго массива стоящее в 
+${i+1} строке и ${j+1} столбце`, 'Ноль нельзя');
+
+                //Проверка при вводе второго массива:
+                if (isNaN(array_V2[i][j])){
+                 alert(`Ошибка! Вводить можно только числа! Давайте начнём с начала!)`,' ');
+                 q_break = false;
+                 location.reload();
+                 break;
+              } else if (array_V2[i][j] == ' '){
+                  alert(`Ошибка! Не ввели значение! Давайте начнём с начала!)`);
+                  q_break = false;
+                  location.reload();
+                  break;
+              }
+            }
+            if (q_break == false){
+              break;
+            }
+          }
+
+        Decision(array_V1, array_V2);
+        }
+
+
+        //Сценарий 2: Рандом значения
+        } else if (question == 2){
+          var rows = +prompt(`Введите количество строк в массивах: `, '');
+          var cols_N = +prompt(`Введите количество столбцов в первом массиве: `, '');
+          var cols_L = +prompt(`Введите количество столбцов во втором массиве: `, '');
+          if (isNaN(rows) || rows < 0 || rows == ''){
+            alert(`Ошибка в количестве строк! Вводить можно только положительные числа! 
+Давайте начнём с начала!)`);
+            location.reload ();
+          } else if (isNaN(cols_N) || cols_N < 0  || rows == ''){
+            alert(`Ошибка в количестве столбцов первого массива! Вводить можно только 
+положительные числа! Давайте начнём с начала!)`);
+            location.reload ();
+          } else if (isNaN(cols_L) || cols_L < 0 || rows == ''){
+            alert(`Ошибка в количестве столбцов второго массива! Вводить можно только 
+положительные числа! Давайте начнём с начала!)`);
+            location.reload ();
+          } else {
+          let array_V1 = [];
+          let array_V2 = [];
+          for (let i = 0; i < rows; i++){
+            array_V1[i] = [];
+            for (let j = 0; j < cols_N; j++){
+              array_V1[i][j] = Math.round(9 * Math.random());
+            }
+          }
+          for (let i = 0; i < rows; i++){
+            array_V2[i] = [];
+            for (let j = 0; j < cols_L; j++){
+              array_V2[i][j] = Math.round(9 * Math.random());
+            }
+          }  
+
+        Decision(array_V1, array_V2);
+        }
+
+        //Сценарий 3: Все значения заданы изначально
+      } else if (question == null){
+      
+         //Значения для проверки:
+         array_V1 = [
+         [1,1,1,1,2,],
+         [1,1,1,1,2,],
+         [2,2,2,2,3,],
+         [2,2,2,2,3,],
+         ];
+         array_V2 = [
+         [1,1,1,1,1,1,2,],
+         [1,1,1,1,1,1,2,],
+         [2,2,2,3,3,3,4,],
+         [3,3,3,3,3,3,4,],
+         ];
+         let rows = array_V1.length;
+         var cols_N = array_V1[0].length;
+         var cols_L = array_V2[0].length;
+         Decision(array_V1, array_V2);
+        } else {
+          alert(`Ошибка при ответе! Допустимые значения: "1", "2" или "Отмена"
+Давайте начнём с начала!)`);
+          location.reload ();
+        }
+
+       </script>
+    </head>
+    <body>
+
+      <h1>Demo Day</h1>
+      <h2>"Даны две числовые матрицы V1(M, N) и V2(M, L).
+        Получить третью результирующую матрицу W суммированием 
+        элементов каждой строки матрицы VI с алгебраической 
+        суммой элементов соответствующей строки матрицы V2.
+        Напечатать матрицу W, после чего вывести на печать 
+        все ее элементы в порядке убывания."</h2>
+    </body>
+</html>
